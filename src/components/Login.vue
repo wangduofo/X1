@@ -57,13 +57,11 @@ export default {
   },
   methods: {
     submit () {
-      this.$refs.loginFormRef.validate((valid) => {
-        if (valid) {
-          alert('submit!')
-        } else {
-          console.log('error submit!!')
-          return false
-        }
+      this.$refs.loginFormRef.validate(async (valid) => {
+        if (!valid) return
+        const { data: res } = this.$http.post('/login', this.loginForm)
+        if (res.meta.status !== 200) return console.log('登录失败')
+        console.log('登录成功')
       })
     },
     reset () {
