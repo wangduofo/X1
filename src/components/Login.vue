@@ -6,14 +6,18 @@
         <img src="@/assets/logo.png" alt />
       </div>
       <!-- 表单区 -->
-      <el-form class="login_form" label-width="0">
+      <el-form class="login_form" label-width="0" :model="loginForm">
         <!-- 用户名 -->
         <el-form-item>
-          <el-input prefix-icon="iconfont icon-user"></el-input>
+          <el-input prefix-icon="iconfont icon-user" v-model="loginForm.username"></el-input>
         </el-form-item>
         <!-- 密码 -->
         <el-form-item>
-          <el-input prefix-icon="iconfont icon-3702mima"></el-input>
+          <el-input
+            prefix-icon="iconfont icon-3702mima"
+            v-model="loginForm.password"
+            type="password"
+          ></el-input>
         </el-form-item>
         <!-- 按钮 -->
         <el-form-item class="btns">
@@ -27,7 +31,14 @@
 
 <script>
 export default {
-
+  data () {
+    return {
+      loginForm: {
+        username: '',
+        password: ''
+      }
+    }
+  }
 }
 </script>
 
