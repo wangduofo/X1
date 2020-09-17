@@ -5,6 +5,7 @@ import store from './store'
 import './plugins/element.js'
 
 import '@/assets/css/global.scss'
+import '@/assets/fonts/iconfont.css'
 
 Vue.config.productionTip = false
 
