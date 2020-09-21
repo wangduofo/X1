@@ -20,6 +20,7 @@
           :collapse="isCollapse"
           :collapse-transition="false"
           router
+          :default-active="activePath"
         >
           <!-- 一级菜单 -->
           <el-submenu :index="item.id + ''" v-for="item in menulist" :key="item.id">
@@ -36,6 +37,7 @@
               :index="'/'+ subItem.path + ''"
               v-for="subItem in item.children"
               :key="subItem.id"
+              @click="saveNavState(subItem.path)"
             >
               <template slot="title">
                 <!-- 图标 -->
@@ -56,9 +58,6 @@
 
 <script>
 export default {
-  created () {
-    this.getMenuList()
-  },
   data () {
     return {
       menulist: [],
@@ -69,8 +68,15 @@ export default {
         102: 'iconfont icon-danju',
         145: 'iconfont icon-baobiao'
       },
-      isCollapse: false
+      // 是否折叠
+      isCollapse: false,
+      // 被激活的链接地址
+      activePath: ''
     }
+  },
+  created () {
+    this.getMenuList()
+    this.activePath = sessionStorage.getItem('activePath')
   },
   methods: {
     logout () {
@@ -85,6 +91,12 @@ export default {
     },
     toggleCollapse () {
       this.isCollapse = !this.isCollapse
+    },
+    // 保存链接的激活状态
+    saveNavState (activePath) {
+      const path = '/' + activePath
+      sessionStorage.setItem('activePath', path)
+      this.activePath = path
     }
   }
 }
