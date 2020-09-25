@@ -438,6 +438,32 @@ export default {
       this.rolesList = res.data
 
       this.setRoleDialogVisible = true
+    },
+    // 点击按钮，分配角色
+    async saveRoleInfo () {
+      if (!this.selectedRoleId) {
+        return this.$message.error('请选择要分配的角色！')
+      }
+
+      const { data: res } = await this.$http.put(
+        `users/${this.userInfo.id}/role`,
+        {
+          rid: this.selectedRoleId
+        }
+      )
+
+      if (res.meta.status !== 200) {
+        return this.$message.error('更新角色失败！')
+      }
+
+      this.$message.success('更新角色成功！')
+      this.getUserList()
+      this.setRoleDialogVisible = false
+    },
+    // 监听分配角色对话框的关闭事件
+    setRoleDialogClosed () {
+      this.selectedRoleId = ''
+      this.userInfo = {}
     }
   }
 }
