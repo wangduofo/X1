@@ -136,7 +136,12 @@
 
     <!-- 修改用户的对话框 -->
     <el-dialog title="修改用户" :visible.sync="editDialogVisible" width="50%">
-      <el-form :model="editForm" ref="editFormRef" label-width="70px">
+      <el-form
+        :model="editForm"
+        ref="editFormRef"
+        label-width="70px"
+        :rules="editFormRules"
+      >
         <el-form-item label="用户名">
           <el-input v-model="editForm.username" disabled></el-input>
         </el-form-item>
@@ -237,7 +242,18 @@ export default {
       },
       // 控制修改用户对话框的显示与隐藏
       editDialogVisible: false,
-      editForm: {}
+      editForm: {},
+      // 修改表单的验证规则对象
+      editFormRules: {
+        email: [
+          { required: true, message: '请输入用户邮箱', trigger: 'blur' },
+          { validator: checkEmail, trigger: 'blur' }
+        ],
+        mobile: [
+          { required: true, message: '请输入用户手机', trigger: 'blur' },
+          { validator: checkMobile, trigger: 'blur' }
+        ]
+      }
     }
   },
   created () {
