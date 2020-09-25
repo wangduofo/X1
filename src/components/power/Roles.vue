@@ -97,9 +97,18 @@
       title="分配权限"
       :visible.sync="setRightDialogVisible"
       width="50%"
+      @close="setRightDialogClosed"
     >
       <!-- 树形控件 -->
-      这是一段信息
+      <el-tree
+        :data="rightslist"
+        :props="treeProps"
+        show-checkbox
+        node-key="id"
+        default-expand-all
+        :default-checked-keys="defKeys"
+        ref="treeRef"
+      ></el-tree>
       <span slot="footer" class="dialog-footer">
         <el-button @click="setRightDialogVisible = false">取 消</el-button>
         <el-button type="primary" @click="allotRights">确 定</el-button>
@@ -117,7 +126,16 @@ export default {
       // 控制分配权限对话框的显示与隐藏
       setRightDialogVisible: false,
       // 所有权限的数据
-      rightslist: []
+      rightslist: [],
+      // 树形控件的属性绑定对象
+      treeProps: {
+        label: 'authName',
+        children: 'children'
+      },
+      // 默认选中的节点Id值数组
+      defKeys: [],
+      // 当前即将分配权限的角色id
+      roleId: ''
     }
   },
   created () {
@@ -135,23 +153,6 @@ export default {
       this.rolelist = res.data
 
       console.log(this.rolelist)
-    },
-    // 展示分配权限的对话框
-    async showSetRightDialog (role) {
-      console.log('showSetRightDialog -> role', role)
-      this.roleId = role.id
-      // 获取所有权限的数据
-      const { data: res } = await this.$http.get('rights/tree')
-
-      if (res.meta.status !== 200) {
-        return this.$message.error('获取权限数据失败！')
-      }
-
-      // 把获取到的权限数据保存到 data 中
-      this.rightslist = res.data
-      console.log(this.rightslist)
-
-      this.setRightDialogVisible = true
     },
     // 根据Id删除对应的权限
     async removeRightById (role, rightId) {
@@ -180,6 +181,39 @@ export default {
 
       // this.getRolesList()
       role.children = res.data
+    },
+    // 展示分配权限的对话框
+    async showSetRightDialog (role) {
+      console.log('showSetRightDialog -> role', role)
+      this.roleId = role.id
+      // 获取所有权限的数据
+      const { data: res } = await this.$http.get('rights/tree')
+
+      if (res.meta.status !== 200) {
+        return this.$message.error('获取权限数据失败！')
+      }
+
+      // 把获取到的权限数据保存到 data 中
+      this.rightslist = res.data
+      console.log(this.rightslist)
+
+      this.setRightDialogVisible = true
+
+      // 递归获取三级节点的Id
+      this.getLeafKeys(role, this.defKeys)
+    },
+    // 通过递归的形式，获取角色下所有三级权限的id，并保存到 defKeys 数组中
+    getLeafKeys (node, arr) {
+      // 如果当前 node 节点不包含 children 属性，则是三级节点
+      if (!node.children) {
+        return arr.push(node.id)
+      }
+
+      node.children.forEach(item => this.getLeafKeys(item, arr))
+    },
+    // 监听分配权限对话框的关闭事件
+    setRightDialogClosed () {
+      this.defKeys = []
     }
   }
 }
