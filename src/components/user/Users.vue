@@ -18,11 +18,17 @@
             clearable
             @clear="getUserList"
           >
-            <el-button slot="append" icon="el-icon-search" @click="getUserList"></el-button>
+            <el-button
+              slot="append"
+              icon="el-icon-search"
+              @click="getUserList"
+            ></el-button>
           </el-input>
         </el-col>
         <el-col :span="4">
-          <el-button type="primary" @click="addDialogVisible = true">添加用户</el-button>
+          <el-button type="primary" @click="addDialogVisible = true"
+            >添加用户</el-button
+          >
         </el-col>
       </el-row>
       <el-table :data="userlist" border stripe>
@@ -32,17 +38,39 @@
         <el-table-column label="电话" prop="mobile"></el-table-column>
         <el-table-column label="角色" prop="role_name"></el-table-column>
         <el-table-column label="状态" prop="mg_state">
-          <template v-slot:default="{row}">
-            <el-switch v-model="row.mg_state" @change="userStateChanged(row)"></el-switch>
+          <template v-slot:default="{ row }">
+            <el-switch
+              v-model="row.mg_state"
+              @change="userStateChanged(row)"
+            ></el-switch>
           </template>
         </el-table-column>
         <el-table-column label="操作" width="180px">
-          <template>
-            <el-tooltip class="item" effect="dark" content="编辑" placement="top">
-              <el-button type="primary" icon="el-icon-edit" size="mini"></el-button>
+          <template v-slot:default="{ row }">
+            <el-tooltip
+              class="item"
+              effect="dark"
+              content="编辑"
+              placement="top"
+            >
+              <el-button
+                type="primary"
+                icon="el-icon-edit"
+                size="mini"
+                @click="showEditDialog(row.id)"
+              ></el-button>
             </el-tooltip>
-            <el-tooltip class="item" effect="dark" content="删除" placement="top">
-              <el-button type="danger" icon="el-icon-delete" size="mini"></el-button>
+            <el-tooltip
+              class="item"
+              effect="dark"
+              content="删除"
+              placement="top"
+            >
+              <el-button
+                type="danger"
+                icon="el-icon-delete"
+                size="mini"
+              ></el-button>
             </el-tooltip>
             <el-tooltip
               class="item"
@@ -51,7 +79,11 @@
               placement="top"
               :enterable="false"
             >
-              <el-button type="warning" icon="el-icon-setting" size="mini"></el-button>
+              <el-button
+                type="warning"
+                icon="el-icon-setting"
+                size="mini"
+              ></el-button>
             </el-tooltip>
           </template>
         </el-table-column>
@@ -68,10 +100,20 @@
     </el-card>
 
     <!-- 添加用户的对话框 -->
-    <el-dialog title="添加用户" :visible.sync="addDialogVisible" width="50%" @close="addDialogClosed">
+    <el-dialog
+      title="添加用户"
+      :visible.sync="addDialogVisible"
+      width="50%"
+      @close="addDialogClosed"
+    >
       <!-- 内容主体区域 -->
       <!-- 内容主体区域 -->
-      <el-form :model="addForm" :rules="addFormRules" ref="addFormRef" label-width="70px">
+      <el-form
+        :model="addForm"
+        :rules="addFormRules"
+        ref="addFormRef"
+        label-width="70px"
+      >
         <el-form-item label="用户名" prop="username">
           <el-input v-model="addForm.username"></el-input>
         </el-form-item>
@@ -89,6 +131,27 @@
       <span slot="footer" class="dialog-footer">
         <el-button @click="addDialogVisible = false">取 消</el-button>
         <el-button type="primary" @click="addUser">确 定</el-button>
+      </span>
+    </el-dialog>
+
+    <!-- 修改用户的对话框 -->
+    <el-dialog title="修改用户" :visible.sync="editDialogVisible" width="50%">
+      <el-form :model="editForm" ref="editFormRef" label-width="70px">
+        <el-form-item label="用户名">
+          <el-input v-model="editForm.username" disabled></el-input>
+        </el-form-item>
+        <el-form-item label="邮箱" prop="email">
+          <el-input v-model="editForm.email"></el-input>
+        </el-form-item>
+        <el-form-item label="手机" prop="mobile">
+          <el-input v-model="editForm.mobile"></el-input>
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="editDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="editDialogVisible = false"
+          >确 定</el-button
+        >
       </span>
     </el-dialog>
   </div>
@@ -171,7 +234,10 @@ export default {
           { required: true, message: '请输入手机号', trigger: 'blur' },
           { validator: checkMobile, trigger: 'blur' }
         ]
-      }
+      },
+      // 控制修改用户对话框的显示与隐藏
+      editDialogVisible: false,
+      editForm: {}
     }
   },
   created () {
@@ -234,6 +300,18 @@ export default {
         // 重新获取用户列表数据
         this.getUserList()
       })
+    },
+    // 展示编辑用户的对话框
+    async showEditDialog (id) {
+      // console.log(id)
+      const { data: res } = await this.$http.get('users/' + id)
+
+      if (res.meta.status !== 200) {
+        return this.$message.error('查询用户信息失败！')
+      }
+
+      this.editForm = res.data
+      this.editDialogVisible = true
     }
   }
 }
