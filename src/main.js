@@ -3,6 +3,7 @@ import App from './App.vue'
 import router from './router'
 import store from './store'
 import './plugins/element.js'
+import ZkTable from 'vue-table-with-tree-grid'
 
 import '@/assets/css/global.scss'
 import '@/assets/fonts/iconfont.css'
@@ -17,6 +18,9 @@ axios.interceptors.request.use(config => {
 })
 
 Vue.prototype.$http = axios
+
+// Vue.use(ZkTable)
+Vue.component('tree-table', ZkTable)
 
 Vue.config.productionTip = false
 
