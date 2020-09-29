@@ -44,6 +44,35 @@
             @click="addDialogVisible = true"
             >添加参数</el-button
           >
+          <!-- 动态参数表格 -->
+          <el-table :data="manyTableData" border stripe>
+            <!-- 展开行 -->
+            <el-table-column type="expand"></el-table-column>
+            <!-- 索引列 -->
+            <el-table-column type="index"></el-table-column>
+            <el-table-column
+              label="参数名称"
+              prop="attr_name"
+            ></el-table-column>
+            <el-table-column label="操作">
+              <template v-slot="{ row }">
+                <el-button
+                  size="mini"
+                  type="primary"
+                  icon="el-icon-edit"
+                  @click="showEditDialog(row.attr_id)"
+                  >编辑</el-button
+                >
+                <el-button
+                  size="mini"
+                  type="danger"
+                  icon="el-icon-delete"
+                  @click="removeParams(row.attr_id)"
+                  >删除</el-button
+                >
+              </template>
+            </el-table-column>
+          </el-table>
         </el-tab-pane>
         <!-- 添加静态属性的面板 -->
         <el-tab-pane label="静态属性" name="only">
@@ -55,6 +84,35 @@
             @click="addDialogVisible = true"
             >添加属性</el-button
           >
+          <!-- 静态属性表格 -->
+          <el-table :data="onlyTableData" border stripe>
+            <!-- 展开行 -->
+            <el-table-column type="expand"></el-table-column>
+            <!-- 索引列 -->
+            <el-table-column type="index"></el-table-column>
+            <el-table-column
+              label="属性名称"
+              prop="attr_name"
+            ></el-table-column>
+            <el-table-column label="操作">
+              <template v-slot="{ row }">
+                <el-button
+                  size="mini"
+                  type="primary"
+                  icon="el-icon-edit"
+                  @click="showEditDialog(row.attr_id)"
+                  >编辑</el-button
+                >
+                <el-button
+                  size="mini"
+                  type="danger"
+                  icon="el-icon-delete"
+                  @click="removeParams(row.attr_id)"
+                  >删除</el-button
+                >
+              </template>
+            </el-table-column>
+          </el-table>
         </el-tab-pane>
       </el-tabs>
     </el-card>
@@ -136,7 +194,16 @@ export default {
       } else {
         this.onlyTableData = res.data
       }
-    }
+    },
+    // 点击按钮，展示修改的对话框
+    async showEditDialog (id) {
+      console.log('showEditDialog -> attr_id', id)
+    },
+    // 重置修改的表单
+    editDialogClosed () {
+      this.$refs.editFormRef.resetFields()
+    },
+    removeParams () {}
   },
   computed: {
     // 如果按钮需要被禁用，则返回true，否则返回false
