@@ -56,8 +56,8 @@
                 <!-- 输入的文本框 -->
                 <el-input
                   class="input-new-tag"
-                  v-if="inputVisible"
-                  v-model="inputValue"
+                  v-if="row.inputVisible"
+                  v-model="row.inputValue"
                   ref="saveTagInput"
                   size="small"
                   @keyup.enter.native="handleInputConfirm(row)"
@@ -239,9 +239,7 @@ export default {
         attr_name: [
           { required: true, message: '请输入参数名称', trigger: 'blur' }
         ]
-      },
-      inputVisible: false,
-      inputValue: ''
+      }
     }
   },
   created () {
@@ -287,6 +285,10 @@ export default {
 
       res.data.forEach(item => {
         item.attr_vals = item.attr_vals ? item.attr_vals.split(' ') : []
+        // 控制文本框的显示与隐藏
+        item.inputVisible = false
+        // 文本框中输入的值
+        item.inputValue = ''
       })
       console.log('getParamsData -> res.data', res.data)
 
@@ -399,11 +401,16 @@ export default {
     },
     // 文本框失去焦点，或摁下了 Enter 都会触发
     async handleInputConfirm (row) {
-      this.inputVisible = false
+      row.inputVisible = false
     },
     // 点击按钮，展示文本输入框
     showInput (row) {
-      this.inputVisible = true
+      row.inputVisible = true
+      // 让文本框自动获得焦点
+      // $nextTick 方法的作用，就是当页面上元素被重新渲染之后，才会指定回调函数中的代码
+      this.$nextTick(_ => {
+        this.$refs.saveTagInput.$refs.input.focus()
+      })
     }
   },
   computed: {
