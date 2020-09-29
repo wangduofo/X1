@@ -20,7 +20,12 @@
       </el-alert>
 
       <!-- 步骤条区域 -->
-      <el-steps :space="200" finish-status="success" align-center>
+      <el-steps
+        :space="200"
+        finish-status="success"
+        align-center
+        :active="activeIndex - 0"
+      >
         <el-step title="基本信息"></el-step>
         <el-step title="商品参数"></el-step>
         <el-step title="商品属性"></el-step>
@@ -34,7 +39,11 @@
 
 <script>
 export default {
-
+  data () {
+    return {
+      activeIndex: '0'
+    }
+  }
 }
 </script>
 
