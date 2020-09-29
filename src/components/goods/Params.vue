@@ -60,7 +60,7 @@
                   size="mini"
                   type="primary"
                   icon="el-icon-edit"
-                  @click="showEditDialog(row.attr_id)"
+                  @click="showEditDialog(row)"
                   >编辑</el-button
                 >
                 <el-button
@@ -100,7 +100,7 @@
                   size="mini"
                   type="primary"
                   icon="el-icon-edit"
-                  @click="showEditDialog(row.attr_id)"
+                  @click="showEditDialog(row)"
                   >编辑</el-button
                 >
                 <el-button
@@ -203,7 +203,11 @@ export default {
       // 控制修改对话框的显示与隐藏
       editDialogVisible: false,
       // 修改的表单数据对象
-      editForm: {},
+      editForm: {
+        attr_name: '',
+        attr_id: '',
+        attr_sel: ''
+      },
       // 修改表单的验证规则对象
       editFormRules: {
         attr_name: [
@@ -224,15 +228,12 @@ export default {
       }
 
       this.catelist = res.data
-
-      console.log(this.catelist)
     },
     // 级联选择框选中项变化，会触发这个函数
     handleChange () {
       this.getParamsData()
     },
     handleTabClick () {
-      console.log(this.activeName)
       this.getParamsData()
     },
     // 获取参数的列表数据
@@ -244,7 +245,6 @@ export default {
       }
 
       // 证明选中的是三级分类
-      console.log(this.selectedCateKeys)
       // 根据所选分类的Id，和当前所处的面板，获取对应的参数
       const { data: res } = await this.$http.get(
         `categories/${this.cateId}/attributes`,
@@ -257,8 +257,6 @@ export default {
         return this.$message.error('获取参数列表失败！')
       }
 
-      console.log(res.data)
-
       if (this.activeName === 'many') {
         this.manyTableData = res.data
       } else {
@@ -266,20 +264,28 @@ export default {
       }
     },
     // 点击按钮，展示修改的对话框
-    async showEditDialog (id) {
+    async showEditDialog (row) {
+      console.log('showEditDialog -> row', row)
       // 查询当前参数的信息
-      const { data: res } = await this.$http.get(
-        `categories/${this.cateId}/attributes/${id}`,
-        {
-          params: { attr_sel: this.activeName }
-        }
-      )
+      // const { data: res } = await this.$http.get(
+      //   `categories/${this.cateId}/attributes/${id}`,
+      //   {
+      //     params: { attr_sel: this.activeName }
+      //   }
+      // )
 
-      if (res.meta.status !== 200) {
-        return this.$message.error('获取参数信息失败！')
+      // if (res.meta.status !== 200) {
+      //   return this.$message.error('获取参数信息失败！')
+      // }
+      this.editForm = {
+        attr_id: row.attr_id,
+        attr_name: row.attr_name,
+        attr_sel: row.attr_sel,
+        cat_id: row.cat_id
       }
 
-      this.editForm = res.data
+      // this.editForm = res.data
+      // console.log('showEditDialog -> this.editForm', this.editForm)
       this.editDialogVisible = true
     },
     // 重置修改的表单
@@ -314,6 +320,21 @@ export default {
     },
     // 点击按钮，修改参数信息
     editParams () {
+      this.$refs.editFormRef.validate(async valid => {
+        if (!valid) return
+        const { data: res } = await this.$http.put(
+          `categories/${this.cateId}/attributes/${this.editForm.attr_id}`,
+          { attr_name: this.editForm.attr_name, attr_sel: this.activeName }
+        )
+
+        if (res.meta.status !== 200) {
+          return this.$message.error('修改参数失败！')
+        }
+
+        this.$message.success('修改参数成功！')
+        this.getParamsData()
+        this.editDialogVisible = false
+      })
     }
   },
   computed: {
