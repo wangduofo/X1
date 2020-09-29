@@ -242,6 +242,24 @@ export default {
     removeParams () {},
     // 点击按钮，添加参数
     addParams () {
+      this.$refs.addFormRef.validate(async valid => {
+        if (!valid) return
+        const { data: res } = await this.$http.post(
+          `categories/${this.cateId}/attributes`,
+          {
+            attr_name: this.addForm.attr_name,
+            attr_sel: this.activeName
+          }
+        )
+
+        if (res.meta.status !== 201) {
+          return this.$message.error('添加参数失败！')
+        }
+
+        this.$message.success('添加参数成功！')
+        this.addDialogVisible = false
+        this.getParamsData()
+      })
     },
     // 监听添加对话框的关闭事件
     addDialogClosed () {
