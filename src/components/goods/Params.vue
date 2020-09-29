@@ -117,7 +117,37 @@
           <!-- 静态属性表格 -->
           <el-table :data="onlyTableData" border stripe>
             <!-- 展开行 -->
-            <el-table-column type="expand"></el-table-column>
+            <el-table-column type="expand">
+              <template #default="{ row }">
+                <!-- 循环渲染Tag标签 -->
+                <el-tag
+                  v-for="(item, i) in row.attr_vals"
+                  :key="i"
+                  closable
+                  @close="handleClose(i, row)"
+                  >{{ item }}</el-tag
+                >
+                <!-- 输入的文本框 -->
+                <el-input
+                  class="input-new-tag"
+                  v-if="row.inputVisible"
+                  v-model="row.inputValue"
+                  ref="saveTagInput"
+                  size="small"
+                  @keyup.enter.native="handleInputConfirm(row)"
+                  @blur="handleInputConfirm(row)"
+                >
+                </el-input>
+                <!-- 添加按钮 -->
+                <el-button
+                  v-else
+                  class="button-new-tag"
+                  size="small"
+                  @click="showInput(row)"
+                  >+ New Tag</el-button
+                >
+              </template>
+            </el-table-column>
             <!-- 索引列 -->
             <el-table-column type="index"></el-table-column>
             <el-table-column
