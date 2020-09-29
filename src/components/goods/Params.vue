@@ -96,10 +96,19 @@ export default {
       console.log(this.catelist)
     },
     // 级联选择框选中项变化，会触发这个函数
-    async handleChange () {
+    handleChange () {
+      this.getParamsData()
+    },
+    handleTabClick () {
+      console.log(this.activeName)
+      this.getParamsData()
+    },
+    // 获取参数的列表数据
+    async getParamsData () {
       // 证明选中的不是三级分类
       if (this.selectedCateKeys.length !== 3) {
         this.selectedCateKeys = []
+        return
       }
 
       // 证明选中的是三级分类
@@ -117,9 +126,6 @@ export default {
       }
 
       console.log(res.data)
-    },
-    handleTabClick () {
-      console.log(this.activeName)
     }
   },
   computed: {
