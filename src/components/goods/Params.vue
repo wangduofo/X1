@@ -47,7 +47,33 @@
           <!-- 动态参数表格 -->
           <el-table :data="manyTableData" border stripe>
             <!-- 展开行 -->
-            <el-table-column type="expand"></el-table-column>
+            <el-table-column type="expand">
+              <template #default="{ row }">
+                <!-- 循环渲染Tag标签 -->
+                <el-tag v-for="(item, i) in row.attr_vals" :key="i" closable>{{
+                  item
+                }}</el-tag>
+                <!-- 输入的文本框 -->
+                <el-input
+                  class="input-new-tag"
+                  v-if="inputVisible"
+                  v-model="inputValue"
+                  ref="saveTagInput"
+                  size="small"
+                  @keyup.enter.native="handleInputConfirm(row)"
+                  @blur="handleInputConfirm(row)"
+                >
+                </el-input>
+                <!-- 添加按钮 -->
+                <el-button
+                  v-else
+                  class="button-new-tag"
+                  size="small"
+                  @click="showInput(row)"
+                  >+ New Tag</el-button
+                >
+              </template>
+            </el-table-column>
             <!-- 索引列 -->
             <el-table-column type="index"></el-table-column>
             <el-table-column
@@ -213,7 +239,9 @@ export default {
         attr_name: [
           { required: true, message: '请输入参数名称', trigger: 'blur' }
         ]
-      }
+      },
+      inputVisible: false,
+      inputValue: ''
     }
   },
   created () {
@@ -257,6 +285,11 @@ export default {
         return this.$message.error('获取参数列表失败！')
       }
 
+      res.data.forEach(item => {
+        item.attr_vals = item.attr_vals ? item.attr_vals.split(' ') : []
+      })
+      console.log('getParamsData -> res.data', res.data)
+
       if (this.activeName === 'many') {
         this.manyTableData = res.data
       } else {
@@ -265,7 +298,7 @@ export default {
     },
     // 点击按钮，展示修改的对话框
     async showEditDialog (row) {
-      console.log('showEditDialog -> row', row)
+      // console.log('showEditDialog -> row', row)
       // 查询当前参数的信息
       // const { data: res } = await this.$http.get(
       //   `categories/${this.cateId}/attributes/${id}`,
@@ -363,6 +396,14 @@ export default {
         this.getParamsData()
         this.editDialogVisible = false
       })
+    },
+    // 文本框失去焦点，或摁下了 Enter 都会触发
+    async handleInputConfirm (row) {
+      this.inputVisible = false
+    },
+    // 点击按钮，展示文本输入框
+    showInput (row) {
+      this.inputVisible = true
     }
   },
   computed: {
@@ -391,5 +432,13 @@ export default {
 <style lang="scss" scoped>
 .cat_opt {
   margin: 15px 0;
+}
+
+.el-tag {
+  margin: 10px;
+}
+
+.input-new-tag {
+  width: 120px;
 }
 </style>
