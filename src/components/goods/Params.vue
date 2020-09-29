@@ -292,7 +292,35 @@ export default {
     editDialogClosed () {
       this.$refs.editFormRef.resetFields()
     },
-    removeParams () {},
+    // 根据Id删除对应的参数项
+    async removeParams (id) {
+      const confirmResult = await this.$confirm(
+        '此操作将永久删除该参数, 是否继续?',
+        '提示',
+        {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }
+      ).catch(err => err)
+
+      // 用户取消了删除的操作
+      if (confirmResult !== 'confirm') {
+        return this.$message.info('已取消删除！')
+      }
+
+      // 删除的业务逻辑
+      const { data: res } = await this.$http.delete(
+        `categories/${this.cateId}/attributes/${id}`
+      )
+
+      if (res.meta.status !== 200) {
+        return this.$message.error('删除参数失败！')
+      }
+
+      this.$message.success('删除参数成功！')
+      this.getParamsData()
+    },
     // 点击按钮，添加参数
     addParams () {
       this.$refs.addFormRef.validate(async valid => {
