@@ -140,6 +140,30 @@
         <el-button type="primary" @click="addParams">确 定</el-button>
       </span>
     </el-dialog>
+
+    <!-- 修改参数的对话框 -->
+    <el-dialog
+      :title="'修改' + titleText"
+      :visible.sync="editDialogVisible"
+      width="50%"
+      @close="editDialogClosed"
+    >
+      <!-- 添加参数的对话框 -->
+      <el-form
+        :model="editForm"
+        :rules="editFormRules"
+        ref="editFormRef"
+        label-width="100px"
+      >
+        <el-form-item :label="titleText" prop="attr_name">
+          <el-input v-model="editForm.attr_name"></el-input>
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="editDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="editParams">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -172,6 +196,16 @@ export default {
       },
       // 添加表单的验证规则对象
       addFormRules: {
+        attr_name: [
+          { required: true, message: '请输入参数名称', trigger: 'blur' }
+        ]
+      },
+      // 控制修改对话框的显示与隐藏
+      editDialogVisible: false,
+      // 修改的表单数据对象
+      editForm: {},
+      // 修改表单的验证规则对象
+      editFormRules: {
         attr_name: [
           { required: true, message: '请输入参数名称', trigger: 'blur' }
         ]
@@ -233,7 +267,20 @@ export default {
     },
     // 点击按钮，展示修改的对话框
     async showEditDialog (id) {
-      console.log('showEditDialog -> attr_id', id)
+      // 查询当前参数的信息
+      const { data: res } = await this.$http.get(
+        `categories/${this.cateId}/attributes/${id}`,
+        {
+          params: { attr_sel: this.activeName }
+        }
+      )
+
+      if (res.meta.status !== 200) {
+        return this.$message.error('获取参数信息失败！')
+      }
+
+      this.editForm = res.data
+      this.editDialogVisible = true
     },
     // 重置修改的表单
     editDialogClosed () {
@@ -264,6 +311,9 @@ export default {
     // 监听添加对话框的关闭事件
     addDialogClosed () {
       this.$refs.addFormRef.resetFields()
+    },
+    // 点击按钮，修改参数信息
+    editParams () {
     }
   },
   computed: {
