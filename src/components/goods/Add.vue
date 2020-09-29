@@ -57,10 +57,10 @@
             </el-form-item>
             <el-form-item label="商品分类" prop="goods_cat">
               <el-cascader
-                expand-trigger="hover"
                 :options="catelist"
                 :props="cateProps"
                 v-model="addForm.goods_cat"
+                @change="handleChange"
               >
               </el-cascader>
             </el-form-item>
@@ -111,7 +111,8 @@ export default {
       cateProps: {
         label: 'cat_name',
         value: 'cat_id',
-        children: 'children'
+        children: 'children',
+        expandTrigger: 'hover'
       }
     }
   },
@@ -128,7 +129,12 @@ export default {
       }
 
       this.catelist = res.data
-      console.log(this.catelist)
+      // console.log('getCateList -> this.catelist', this.catelist)
+    },
+    handleChange () {
+      if (this.addForm.goods_cat.length !== 3) {
+        this.addForm.goods_cat = []
+      }
     }
   }
 }
