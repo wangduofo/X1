@@ -114,6 +114,22 @@ export default {
         children: 'children'
       }
     }
+  },
+  created () {
+    this.getCateList()
+  },
+  methods: {
+    // 获取所有商品分类数据
+    async getCateList () {
+      const { data: res } = await this.$http.get('categories')
+
+      if (res.meta.status !== 200) {
+        return this.$message.error('获取商品分类数据失败！')
+      }
+
+      this.catelist = res.data
+      console.log(this.catelist)
+    }
   }
 }
 </script>
