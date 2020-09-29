@@ -116,6 +116,30 @@
         </el-tab-pane>
       </el-tabs>
     </el-card>
+
+    <!-- 添加参数的对话框 -->
+    <el-dialog
+      :title="'添加' + titleText"
+      :visible.sync="addDialogVisible"
+      width="50%"
+      @close="addDialogClosed"
+    >
+      <!-- 添加参数的对话框 -->
+      <el-form
+        :model="addForm"
+        :rules="addFormRules"
+        ref="addFormRef"
+        label-width="100px"
+      >
+        <el-form-item :label="titleText" prop="attr_name">
+          <el-input v-model="addForm.attr_name"></el-input>
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="addDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="addParams">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -139,7 +163,19 @@ export default {
       // 动态参数的数据
       manyTableData: [],
       // 静态属性的数据
-      onlyTableData: []
+      onlyTableData: [],
+      // 控制添加对话框的显示与隐藏
+      addDialogVisible: false,
+      // 添加参数的表单数据对象
+      addForm: {
+        attr_name: ''
+      },
+      // 添加表单的验证规则对象
+      addFormRules: {
+        attr_name: [
+          { required: true, message: '请输入参数名称', trigger: 'blur' }
+        ]
+      }
     }
   },
   created () {
@@ -203,7 +239,14 @@ export default {
     editDialogClosed () {
       this.$refs.editFormRef.resetFields()
     },
-    removeParams () {}
+    removeParams () {},
+    // 点击按钮，添加参数
+    addParams () {
+    },
+    // 监听添加对话框的关闭事件
+    addDialogClosed () {
+      this.$refs.addFormRef.resetFields()
+    }
   },
   computed: {
     // 如果按钮需要被禁用，则返回true，否则返回false
@@ -216,6 +259,13 @@ export default {
         return this.selectedCateKeys[2]
       }
       return null
+    },
+    // 动态计算标题的文本
+    titleText () {
+      if (this.activeName === 'many') {
+        return '动态参数'
+      }
+      return '静态属性'
     }
   }
 }
