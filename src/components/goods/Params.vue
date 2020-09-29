@@ -50,9 +50,13 @@
             <el-table-column type="expand">
               <template #default="{ row }">
                 <!-- 循环渲染Tag标签 -->
-                <el-tag v-for="(item, i) in row.attr_vals" :key="i" closable>{{
-                  item
-                }}</el-tag>
+                <el-tag
+                  v-for="(item, i) in row.attr_vals"
+                  :key="i"
+                  closable
+                  @close="handleClose(i, row)"
+                  >{{ item }}</el-tag
+                >
                 <!-- 输入的文本框 -->
                 <el-input
                   class="input-new-tag"
@@ -439,6 +443,11 @@ export default {
       this.$nextTick(_ => {
         this.$refs.saveTagInput.$refs.input.focus()
       })
+    },
+    // 删除对应的参数可选项
+    handleClose (i, row) {
+      row.attr_vals.splice(i, 1)
+      this.saveAttrVals(row)
     }
   },
   computed: {
