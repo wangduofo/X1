@@ -150,7 +150,8 @@ export default {
         // 图片的数组
         pics: [],
         // 商品的详情描述
-        goods_introduce: ''
+        goods_introduce: '',
+        attrs: []
       },
       addFormRules: {
         goods_name: [
@@ -287,6 +288,35 @@ export default {
         // lodash   cloneDeep(obj)
         const form = _.cloneDeep(this.addForm)
         form.goods_cat = form.goods_cat.join(',')
+        // 处理动态参数
+        this.manyTableData.forEach(item => {
+          const newInfo = {
+            attr_id: item.attr_id,
+            attr_value: item.attr_vals.join(' ')
+          }
+          this.addForm.attrs.push(newInfo)
+        })
+        // 处理静态属性
+        this.onlyTableData.forEach(item => {
+          const newInfo = {
+            attr_id: item.attr_id,
+            attr_value: item.attr_vals
+          }
+          this.addForm.attrs.push(newInfo)
+        })
+        form.attrs = this.addForm.attrs
+        console.log('add -> form', form)
+
+        // 发起请求添加商品
+        // 商品的名称，必须是唯一的
+        const { data: res } = await this.$http.post('goods', form)
+
+        if (res.meta.status !== 201) {
+          return this.$message.error('添加商品失败！')
+        }
+
+        this.$message.success('添加商品成功！')
+        this.$router.push('/goods')
       })
     }
   },
