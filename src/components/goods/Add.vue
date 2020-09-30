@@ -105,6 +105,7 @@
               :headers="headerObj"
               multiple
               list-type="picture"
+              :on-success="handleSuccess"
             >
               <el-button size="small" type="primary">点击上传</el-button>
               <div slot="tip" class="el-upload__tip">
@@ -131,7 +132,9 @@ export default {
         goods_weight: 0,
         goods_number: 0,
         // 商品所属的分类数组
-        goods_cat: []
+        goods_cat: [],
+        // 图片的数组
+        pics: []
       },
       addFormRules: {
         goods_name: [
@@ -238,6 +241,14 @@ export default {
     },
     handleRemove () {
 
+    },
+    // 监听图片上传成功的事件
+    handleSuccess (response) {
+      // 1. 拼接得到一个图片信息对象
+      const picInfo = { pic: response.data.tmp_path }
+      // 2. 将图片信息对象，push 到pics数组中
+      this.addForm.pics.push(picInfo)
+      console.log('handleSuccess -> this.addForm', this.addForm)
     }
   },
   computed: {
