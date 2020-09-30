@@ -22,7 +22,35 @@
 
 <script>
 export default {
+  data () {
+    return {
+      queryInfo: {
+        query: '',
+        pagenum: 1,
+        pagesize: 10
+      },
+      total: 0,
+      orderlist: []
+    }
+  },
+  created () {
+    this.getOrderList()
+  },
+  methods: {
+    async getOrderList () {
+      const { data: res } = await this.$http.get('orders', {
+        params: this.queryInfo
+      })
 
+      if (res.meta.status !== 200) {
+        return this.$message.error('获取订单列表失败！')
+      }
+
+      console.log(res)
+      this.total = res.data.total
+      this.orderlist = res.data.goods
+    }
+  }
 }
 </script>
 
