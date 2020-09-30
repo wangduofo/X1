@@ -1,5 +1,6 @@
 import axios from 'axios'
 
+// const baseURL = 'http://127.0.0.1:8888'
 const baseURL = 'http://vue-shop-api.itheima.net'
 
 axios.defaults.baseURL = `${baseURL}/api/private/v1`

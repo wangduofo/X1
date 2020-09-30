@@ -182,7 +182,7 @@ export default {
       manyTableData: [],
       // 静态属性列表数据
       onlyTableData: [],
-      uploadURL: 'http://vue-shop-api.itheima.net/api/private/v1/upload',
+      uploadURL: baseURL + '/api/private/v1/upload',
       // 图片上传组件的headers请求头对象
       headerObj: {
         Authorization: sessionStorage.getItem('token')
