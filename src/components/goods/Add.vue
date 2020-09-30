@@ -133,6 +133,7 @@
 
 <script>
 import { baseURL } from '@/plugins/axios'
+import _ from 'lodash'
 
 export default {
   data () {
@@ -278,7 +279,15 @@ export default {
       console.log('handleSuccess -> this.addForm', this.addForm)
     },
     add () {
-
+      this.$refs.addFormRef.validate(async valid => {
+        if (!valid) {
+          return this.$message.error('请填写必要的表单项！')
+        }
+        // 执行添加的业务逻辑
+        // lodash   cloneDeep(obj)
+        const form = _.cloneDeep(this.addForm)
+        form.goods_cat = form.goods_cat.join(',')
+      })
     }
   },
   computed: {
