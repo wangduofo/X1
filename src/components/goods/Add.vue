@@ -117,10 +117,16 @@
         </el-tabs>
       </el-form>
     </el-card>
+    <!-- 图片预览 -->
+    <el-dialog title="图片预览" :visible.sync="previewVisible" width="50%">
+      <img :src="previewPath" alt="" class="previewImg" />
+    </el-dialog>
   </div>
 </template>
 
 <script>
+import { baseURL } from '@/plugins/axios'
+
 export default {
   data () {
     return {
@@ -169,7 +175,9 @@ export default {
       // 图片上传组件的headers请求头对象
       headerObj: {
         Authorization: sessionStorage.getItem('token')
-      }
+      },
+      previewPath: '',
+      previewVisible: false
     }
   },
   created () {
@@ -236,8 +244,11 @@ export default {
         this.onlyTableData = res.data
       }
     },
-    handlePreview () {
-
+    // 处理图片预览效果
+    handlePreview (file) {
+      console.log('handlePreview -> file', file)
+      this.previewPath = baseURL + '/' + file.response.data.tmp_path
+      this.previewVisible = true
     },
     // 处理移除图片的操作
     handleRemove (file) {
@@ -272,5 +283,9 @@ export default {
 <style lang="scss" scoped>
 .el-checkbox {
   margin: 0 10px 0 0 !important;
+}
+
+.previewImg {
+  width: 100%;
 }
 </style>

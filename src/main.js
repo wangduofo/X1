@@ -8,14 +8,7 @@ import ZkTable from 'vue-table-with-tree-grid'
 import '@/assets/css/global.scss'
 import '@/assets/fonts/iconfont.css'
 
-import axios from 'axios'
-
-axios.defaults.baseURL = 'http://vue-shop-api.itheima.net/api/private/v1'
-axios.interceptors.request.use(config => {
-  // console.log(config)
-  config.headers.Authorization = sessionStorage.getItem('token')
-  return config
-})
+import { axios } from '@/plugins/axios'
 
 Vue.prototype.$http = axios
 
