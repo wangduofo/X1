@@ -11,6 +11,8 @@ import Params from '@/components/goods/Params.vue'
 import List from '@/components/goods/List.vue'
 import Add from '@/components/goods/Add.vue'
 
+import '@/plugins/editor'
+
 Vue.use(VueRouter)
 
 const routes = [
