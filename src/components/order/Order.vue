@@ -64,10 +64,59 @@
       >
       </el-pagination>
     </el-card>
+
+    <!-- 修改地址的对话框 -->
+    <el-dialog
+      title="修改地址"
+      :visible.sync="addressVisible"
+      width="50%"
+      @close="addressDialogClosed"
+    >
+      <el-form
+        :model="addressForm"
+        :rules="addressFormRules"
+        ref="addressFormRef"
+        label-width="100px"
+      >
+        <el-form-item label="省市区/县" prop="address1">
+          <el-cascader
+            :options="cityData"
+            v-model="addressForm.address1"
+            clearable
+            :props="editProps"
+          ></el-cascader>
+        </el-form-item>
+        <el-form-item label="详细地址" prop="address2">
+          <el-input v-model="addressForm.address2"></el-input>
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="addressVisible = false">取 消</el-button>
+        <el-button type="primary" @click="addressVisible = false"
+          >确 定</el-button
+        >
+      </span>
+    </el-dialog>
+
+    <!-- 展示物流进度的对话框 -->
+    <el-dialog title="物流进度" :visible.sync="progressVisible" width="50%">
+      <!-- 时间线 -->
+      <el-timeline>
+        <el-timeline-item
+          v-for="(activity, index) in progressInfo"
+          :key="index"
+          :timestamp="activity.time"
+        >
+          {{ activity.context }}
+        </el-timeline-item>
+      </el-timeline>
+    </el-dialog>
   </div>
 </template>
 
 <script>
+import cityData from './citydata'
+
 export default {
   data () {
     return {
@@ -77,7 +126,26 @@ export default {
         pagesize: 10
       },
       total: 0,
-      orderlist: []
+      orderlist: [],
+      addressVisible: false,
+      addressForm: {
+        address1: [],
+        address2: ''
+      },
+      addressFormRules: {
+        address1: [
+          { required: true, message: '请选择省市区县', trigger: 'blur' }
+        ],
+        address2: [
+          { required: true, message: '请填写详细地址', trigger: 'blur' }
+        ]
+      },
+      cityData,
+      editProps: {
+        expandTrigger: 'hover'
+      },
+      progressVisible: false,
+      progressInfo: []
     }
   },
   created () {
@@ -104,10 +172,32 @@ export default {
     handleCurrentChange (newPage) {
       this.queryInfo.pagenum = newPage
       this.getOrderList()
+    },
+    // 展示修改地址的对话框
+    showBox () {
+      this.addressVisible = true
+    },
+    addressDialogClosed () {
+      this.$refs.addressFormRef.resetFields()
+    },
+    async showProgressBox () {
+      const { data: res } = await this.$http.get('/kuaidi/804909574412544580')
+
+      if (res.meta.status !== 200) {
+        return this.$message.error('获取物流进度失败！')
+      }
+
+      this.progressInfo = res.data
+
+      this.progressVisible = true
+      console.log(this.progressInfo)
     }
   }
 }
 </script>
 
 <style lang="scss" scoped>
+.el-cascader {
+  width: 100%;
+}
 </style>
